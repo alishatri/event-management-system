@@ -6,12 +6,16 @@ const {
   updateEvent,
   deleteEvent,
 } = require("../controllers/events");
+const upload = require("../middleware/imageUpload");
 
-router.post("/", setEvent);
-router.get("/", getEvent);
-router.get("/", getEvents);
-router.get("/", updateEvent);
-router.get("/", deleteEvent);
+router.post("/create",upload.single("imageUrl"),  setEvent);
 
+router.get("/get-event/:id", getEvent);
+
+router.get("/get-events", getEvents);
+
+router.put("/update/:id", upload.single("imageUrl"), updateEvent);
+
+router.delete("/delete/:id", deleteEvent);
 
 module.exports = router;
