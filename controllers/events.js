@@ -11,14 +11,14 @@ const setEvent = async (req, res) => {
       organizedBy,
       location,
       timeframe,
-      members,
+      maxMembers,
     } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ message: "Image file is required." });
     }
     const imageUrl = req.file.path;
-    const mb = parseInt(members);
+    const mb = parseInt(maxMembers);
     const event = await prisma.event.create({
       data: {
         title,
@@ -28,7 +28,7 @@ const setEvent = async (req, res) => {
         organizedBy,
         location,
         timeframe,
-        members:mb,
+        maxMembers: mb,
       },
     });
     console.log(event);
@@ -49,8 +49,13 @@ const getEvent = async (req, res) => {
       where: {
         id: eventId,
       },
+      include: {
+        registrations: true,
+      },
     });
-    res.json(event);
+    event
+      ? res.json(event)
+      : res.status(404).json({ message: `Event with id ${eventId} not found` });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -61,8 +66,16 @@ const getEvent = async (req, res) => {
 
 const getEvents = async (req, res) => {
   try {
-    const events = await prisma.event.findMany();
-    res.json(events);
+    const events = await prisma.event.findMany({
+      include: {
+        registrations: true,
+      },
+    });
+    if (events.length > 0) {
+      res.json(events);
+    } else {
+      res.status(404).json({ message: `Events not found` });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -122,10 +135,45 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const deleteEventMember = async (req, res) => {
+  try {
+    const { eventId, email } = req.body;
+
+    const registrationRecord = await prisma.registration.findUnique({
+      where: {
+        eventId,
+        email,
+      },
+    });
+    if (!registrationRecord) {
+      return res.status(404).json({
+        message: "Registration not found",
+      });
+    }
+
+    await prisma.registration.delete({
+      where: {
+        id: registrationRecord.id,
+      },
+    });
+
+    res.json({
+      message: "Registration deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: `${error}`,
+    });
+  }
+};
+
 module.exports = {
   setEvent,
   getEvent,
   getEvents,
   updateEvent,
   deleteEvent,
+  deleteEventMember,
 };

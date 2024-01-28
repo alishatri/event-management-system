@@ -16,7 +16,7 @@ model Event {
   organizedBy String
   location String
   timeframe String
-  members Int
+  maxMembers Int
   registrations Registration[]
   createdAt DateTime @default(now())
 }
@@ -25,8 +25,8 @@ model Registration {
   id Int @id @default(autoincrement()) @unique
   firstName String
   lastName String
-  email String @unique
-  eventId Int
+  email String
+  eventId Int @unique
   event Event @relation(fields: [eventId], references: [id])
   createdAt DateTime @default(now())
 }

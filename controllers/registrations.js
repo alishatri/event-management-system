@@ -1,38 +1,13 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  service: "outlook",
-  auth: {
-    user: process.env.USER_EMAIL,
-    pass: process.env.USER_PASSWORD,
-    type: "PLAIN",
-  },
-});
-
-async function sendConfirmationEmail(email) {
-  const info = await transporter.sendMail({
-    from: '"Ali Shatri" <alishatri@outlook.com>', // replace with your sender address
-    to: email,
-    subject: "Confirmation for event registration",
-    text: "Thank you for registering for the event. Please confirm your attendance.",
-    html: `<button style="width:100px; padding:1rem;">Confirm</button>`,
-  });
-
-  console.log("Confirmation email sent: ", info.messageId);
-}
-
-
-
-
 const setRegistration = async (req, res) => {
   try {
     const { firstName, lastName, email, eventId } = req.body;
-    const existingEmail = await prisma.registration.findUnique({
+   
+    const findEventId = await prisma.event.findUnique({
       where: {
-        email: email,
+        id: eventId,
       },
     });
     const registration = await prisma.registration.create({
@@ -43,12 +18,7 @@ const setRegistration = async (req, res) => {
         eventId,
       },
     });
-    // await sendConfirmationEmail(email);
-    
-    existingEmail
-      ? res.status(400).json({ message: `${email} already exist` })
-      : res.json(registration);
-
+    res.json(registration);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -60,8 +30,17 @@ const setRegistration = async (req, res) => {
 
 const getRegistrations = async (req, res) => {
   try {
-    const registration = await prisma.registration.findMany({});
-    res.json(registration);
+    const registration = await prisma.registration.findMany({
+      include: {
+        event: true,
+      },
+    });
+
+    if (registration.length > 0) {
+      res.json(registration);
+    } else {
+      res.status(404).json({ message: `Registrations not found` });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -79,7 +58,11 @@ const getRegistration = async (req, res) => {
         id: registrationId,
       },
     });
-    res.json(registration);
+    registration
+      ? res.json(registration)
+      : res
+          .status(404)
+          .json({ message: `Member with id ${registrationId} not found` });
   } catch (error) {
     console.log(error);
     res.status(500).json({
