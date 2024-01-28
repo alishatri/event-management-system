@@ -35,9 +35,9 @@
 
 ## Running the App
 
-Start the application in development mode:
+1. Start the application in development mode:
 
 ```bash
 npm run start
-
- Open your browser and visit http://localhost:3000 to access the backend API.
+``` 
+2. Open your browser and visit http://localhost:3000 to access the backend API.
