@@ -17,7 +17,7 @@ model Event {
   location String
   timeframe String
   maxMembers Int
-  registrations Registration[]
+  registrations Registration[] 
   createdAt DateTime @default(now())
 }
 
@@ -27,6 +27,6 @@ model Registration {
   lastName String
   email String
   eventId Int @unique
-  event Event @relation(fields: [eventId], references: [id])
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }

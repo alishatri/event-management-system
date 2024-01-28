@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { isGetAccessor } = require("typescript");
 
 const prisma = new PrismaClient();
 
@@ -89,11 +90,22 @@ const updateEvent = async (req, res) => {
     const eventId = parseInt(req.params.id);
     const { title, description, date, organizedBy, timeframe } = req.body;
 
+    const checkEvent = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+    });
+
     if (!req.file) {
       return res.status(400).json({ message: "Image file is required." });
     }
     const imageUrl = req.file.path;
 
+    if (!checkEvent) {
+      return res
+        .status(404)
+        .json({ message: `Event with id ${eventId} not found` });
+    }
     const event = await prisma.event.update({
       where: {
         id: eventId,
@@ -119,13 +131,18 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const eventId = parseInt(req.params.id);
-    const event = await prisma.event.delete({
+    const event = await prisma.event.findUnique({
       where: {
         id: eventId,
       },
     });
+
     event
-      ? res.status(200).json({ message: `Event with id ${eventId} is deleted` })
+      ? await prisma.event.delete({
+          where: {
+            id: eventId,
+          },
+        })
       : res.status(404).json({ message: `Event with id ${eventId} not found` });
   } catch (error) {
     console.log(error);
@@ -139,26 +156,25 @@ const deleteEventMember = async (req, res) => {
   try {
     const { eventId, email } = req.body;
 
-    const registrationRecord = await prisma.registration.findUnique({
+    const checkRegistration = await prisma.registration.findUnique({
       where: {
         eventId,
         email,
       },
     });
-    if (!registrationRecord) {
+    if (!checkRegistration) {
       return res.status(404).json({
-        message: "Registration not found",
+        message: `Registration with ${email} not found`,
       });
     }
 
     await prisma.registration.delete({
       where: {
-        id: registrationRecord.id,
+        id: checkRegistration.id,
       },
     });
-
     res.json({
-      message: "Registration deleted successfully",
+      message: `Registration with ${email} in event with id ${eventId} deleted successfully`,
     });
   } catch (error) {
     console.log(error);

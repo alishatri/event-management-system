@@ -4,13 +4,7 @@ const prisma = new PrismaClient();
 const setRegistration = async (req, res) => {
   try {
     const { firstName, lastName, email, eventId } = req.body;
-   
-    const findEventId = await prisma.event.findUnique({
-      where: {
-        id: eventId,
-      },
-    });
-    const registration = await prisma.registration.create({
+    const register = await prisma.registration.create({
       data: {
         firstName,
         lastName,
@@ -18,13 +12,10 @@ const setRegistration = async (req, res) => {
         eventId,
       },
     });
-    res.json(registration);
+    res.json(register);
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      message: `Internal server error`,
-      error: `${error}`,
-    });
+    res.status(500).json({ message: `Internal server error` });
   }
 };
 
@@ -52,17 +43,18 @@ const getRegistrations = async (req, res) => {
 
 const getRegistration = async (req, res) => {
   try {
-    const registrationId = parseInt(req.params.id);
+    const { email } = req.body;
     const registration = await prisma.registration.findUnique({
       where: {
-        id: registrationId,
+        email,
       },
     });
+
     registration
       ? res.json(registration)
-      : res
-          .status(404)
-          .json({ message: `Member with id ${registrationId} not found` });
+      : res.status(404).json({
+          message: `Registration with email ${email} not found`,
+        });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -74,6 +66,14 @@ const getRegistration = async (req, res) => {
 
 const updateRegistration = async (req, res) => {
   try {
+    const { firstName, lastName, email } = req.body;
+    const registrationId = parseInt(req.params.id);
+    const registration = await prisma.registration.update({
+      where: {
+        id: registrationId,
+      },
+      data: { firstName, lastName, email },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -85,10 +85,11 @@ const updateRegistration = async (req, res) => {
 
 const deleteRegistration = async (req, res) => {
   try {
-    const registrationId = parseInt(req.params.id);
-    const registration = await prisma.registration.delete({
+    const { email } = req.body;
+
+    await prisma.registration.delete({
       where: {
-        id: registrationId,
+        email,
       },
     });
   } catch (error) {
