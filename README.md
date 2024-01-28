@@ -40,4 +40,3 @@
 ```bash
 npm run start
 ``` 
-2. Open your browser and visit http://localhost:3000 to access the backend API.
