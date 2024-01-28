@@ -44,23 +44,13 @@ npm run start
 
 ## Running the App (Continued)
 
-2. **Seed the Database (Optional):**
-
-   If you want to populate the database with sample data, run:
-
-   ```bash
-   npm run seed
-   ```
-
-   This command will create example events and registrations.
-
-3. **Access the API Endpoints:**
+2. **Access the API Endpoints:**
 
    - Open your browser or use a tool like [Postman](https://www.postman.com/) to interact with the API.
 
    - Base URL: `http://localhost:3000` (or your specified port)
 
-4. **API Endpoints:**
+3. **API Endpoints:**
 
    ### Events
 
@@ -108,4 +98,4 @@ npm run start
    - **Delete Registration:**
      - Endpoint: `DELETE /delete/:id`
 
-Thank you for using the Event Management System! Happy coding!
+Thank you for using the Event Management System!
