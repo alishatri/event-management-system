@@ -9,12 +9,12 @@ const {
 
 router.post("/create", setRegistration);
 
-router.get("/get-registration/:id", getRegistration);
+router.get("/get-registration", getRegistration);
 
 router.get("/get-registrations", getRegistrations);
 
 router.put("/update/:id", updateRegistration);
 
-router.delete("/delete/:id", deleteRegistration);
+router.delete("/delete", deleteRegistration);
 
 module.exports = router;

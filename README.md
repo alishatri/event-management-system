@@ -56,7 +56,7 @@ npm run start
 
    - **Create Event:**
 
-     - Endpoint: `POST /create`
+     - Endpoint: `POST /create` , `Create a new Event`
 
    - **Get Event by ID:**
 
@@ -85,7 +85,7 @@ npm run start
 
    - **Get Registration by ID:**
 
-     - Endpoint: `GET /get-registration/:id`
+     - Endpoint: `GET /get-registration`
 
    - **Get All Registrations:**
 
@@ -96,6 +96,6 @@ npm run start
      - Endpoint: `PUT /update/:id`
 
    - **Delete Registration:**
-     - Endpoint: `DELETE /delete/:id`
+     - Endpoint: `DELETE /delete`
 
 Thank you for using the Event Management System!
