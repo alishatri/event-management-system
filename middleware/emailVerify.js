@@ -1,7 +1,5 @@
 const nodemailer = require("nodemailer");
 
-const USER_EMAIL = "alishatri21@gmail.com";
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -12,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 const sendConfirmationEmail = async (email) => {
   const info = await transporter.sendMail({
-    from: USER_EMAIL,
+    from: process.env.USER_EMAIL,
     to: email,
     subject: "Confirmation for event registration",
     text: "Thank you for registering for the event. Please confirm your attendance.",
@@ -27,7 +25,7 @@ const sendConfirmationEmail = async (email) => {
 
 const sendDeletedEmail = async (email) => {
   const info = await transporter.sendMail({
-    from: USER_EMAIL,
+    from: process.env.USER_EMAIL,
     to: email,
     subject: "You are deleted from event",
     text: "You are deleted from event..",
