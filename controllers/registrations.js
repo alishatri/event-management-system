@@ -1,6 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const {sendConfirmationEmail } = require("../middleware/emailVerify");
+
 const setRegistration = async (req, res) => {
   try {
     const { firstName, lastName, email, eventId } = req.body;
@@ -31,6 +33,8 @@ const setRegistration = async (req, res) => {
     const register = await prisma.registration.create({
       data: { firstName, lastName, email, eventId },
     });
+
+    await sendConfirmationEmail(email);
 
     res
       .status(201)
@@ -100,8 +104,9 @@ const updateRegistration = async (req, res) => {
       },
       data: { firstName, lastName, email },
     });
-
-    res.status(201).json({ message: "Registration successful", registration });
+    res
+      .status(201)
+      .json({ message: "Registration updated successful", registration });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -113,11 +118,26 @@ const updateRegistration = async (req, res) => {
 
 const deleteRegistration = async (req, res) => {
   try {
-    const { email } = req.body;
-    await prisma.registration.delete({
+    const id = parseInt(req.params.id);
+
+    const checkId = await prisma.registration.findUnique({
       where: {
-        email,
+        id,
       },
+    });
+    if (!checkId) {
+      res.status(404).json({
+        message: `Registration with id ${id} not found , please check the  correct id!!`,
+      });
+    }
+    const deleteRegistration = await prisma.registration.delete({
+      where: {
+        id,
+      },
+    });
+    res.status(200).json({
+      message: `Registration with id ${id} deleted `,
+      registration: deleteRegistration,
     });
   } catch (error) {
     console.log(error);

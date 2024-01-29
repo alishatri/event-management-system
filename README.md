@@ -96,6 +96,6 @@ npm run start
      - Endpoint: `PUT /update/:id`, `Update Registration`
 
    - **Delete Registration:**
-     - Endpoint: `DELETE /delete`, `Delete registration by Email`
+     - Endpoint: `DELETE /delete/:id`, `Delete registration by ID`
 
 Thank you for using the Event Management System!

@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
-const { isGetAccessor } = require("typescript");
-
 const prisma = new PrismaClient();
+
+const { sendDeletedEmail } = require("../middleware/emailVerify");
 
 const setEvent = async (req, res) => {
   try {
@@ -157,12 +157,13 @@ const deleteEventMember = async (req, res) => {
   try {
     const { eventId, email } = req.body;
 
-    const checkRegistration = await prisma.registration.findUnique({
+    const checkRegistration = await prisma.registration.findFirst({
       where: {
         eventId,
         email,
       },
     });
+
     if (!checkRegistration) {
       return res.status(404).json({
         message: `Registration with ${email} not found`,
@@ -171,9 +172,10 @@ const deleteEventMember = async (req, res) => {
 
     await prisma.registration.delete({
       where: {
-        id: checkRegistration.id,
+        id: eventId,
       },
     });
+    await sendDeletedEmail(email);
     res.json({
       message: `Registration with ${email} in event with id ${eventId} deleted successfully`,
     });
