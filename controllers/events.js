@@ -33,7 +33,8 @@ const setEvent = async (req, res) => {
       },
     });
     console.log(event);
-    res.json(event);
+
+    res.status(201).json({ message: "Event created successful", event: event });
   } catch (error) {
     console.log(error);
     res.status(500).json({

@@ -4,18 +4,42 @@ const prisma = new PrismaClient();
 const setRegistration = async (req, res) => {
   try {
     const { firstName, lastName, email, eventId } = req.body;
-    const register = await prisma.registration.create({
-      data: {
-        firstName,
-        lastName,
+
+    const existingEvent = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+    });
+    if (!existingEvent) {
+      return res
+        .status(404)
+        .json({ message: `Event with ID ${eventId} not found` });
+    }
+
+    const existingRegistration = await prisma.registration.findFirst({
+      where: {
         email,
         eventId,
       },
     });
-    res.json(register);
+
+    if (existingRegistration) {
+      return res.status(400).json({
+        message: `Email ${email} is already registered for this event`,
+      });
+    }
+    const register = await prisma.registration.create({
+      data: { firstName, lastName, email, eventId },
+    });
+
+    res
+      .status(201)
+      .json({ message: "Registration successful", registration: register });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Internal server error` });
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: `${error}` });
   }
 };
 
@@ -44,12 +68,14 @@ const getRegistrations = async (req, res) => {
 const getRegistration = async (req, res) => {
   try {
     const { email } = req.body;
-    const registration = await prisma.registration.findUnique({
+    const registration = await prisma.registration.findFirst({
       where: {
-        email,
+        email: email,
+      },
+      include: {
+        event: true,
       },
     });
-
     registration
       ? res.json(registration)
       : res.status(404).json({
@@ -74,6 +100,8 @@ const updateRegistration = async (req, res) => {
       },
       data: { firstName, lastName, email },
     });
+
+    res.status(201).json({ message: "Registration successful", registration });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -86,7 +114,6 @@ const updateRegistration = async (req, res) => {
 const deleteRegistration = async (req, res) => {
   try {
     const { email } = req.body;
-
     await prisma.registration.delete({
       where: {
         email,
