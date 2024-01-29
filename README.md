@@ -60,42 +60,42 @@ npm run start
 
    - **Get Event by ID:**
 
-     - Endpoint: `GET /get-event/:id`
+     - Endpoint: `GET /get-event/:id` , `Get Specific event`
 
    - **Get All Events:**
 
-     - Endpoint: `GET /get-events`
+     - Endpoint: `GET /get-events` , `Get all events`
 
    - **Update Event:**
 
-     - Endpoint: `PUT /update/:id`
+     - Endpoint: `PUT /update/:id` , `Update Event`
 
    - **Delete Event:**
 
-     - Endpoint: `DELETE /delete/:id`
+     - Endpoint: `DELETE /delete/:id` , `Delete Event`
 
    - **Delete Event Registration:**
-     - Endpoint: `DELETE /delete-member`
+     - Endpoint: `DELETE /delete-member` , `Delete specific member from event`
 
    ### Registrations
 
    - **Create Registration:**
 
-     - Endpoint: `POST /create`
+     - Endpoint: `POST /create`, `Create a new Registration`
 
-   - **Get Registration by ID:**
+   - **Get Registration by EMAIL:**
 
-     - Endpoint: `GET /get-registration`
+     - Endpoint: `GET /get-registration`, `Create registration by Email`
 
    - **Get All Registrations:**
 
-     - Endpoint: `GET /get-registrations`
+     - Endpoint: `GET /get-registrations`, `Create all Registrations`
 
    - **Update Registration:**
 
-     - Endpoint: `PUT /update/:id`
+     - Endpoint: `PUT /update/:id`, `Update Registration`
 
    - **Delete Registration:**
-     - Endpoint: `DELETE /delete`
+     - Endpoint: `DELETE /delete`, `Delete registration by Email`
 
 Thank you for using the Event Management System!
