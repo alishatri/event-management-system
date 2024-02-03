@@ -170,14 +170,16 @@ const deleteEventMember = async (req, res) => {
       });
     }
 
-    await prisma.registration.delete({
+    const registration = await prisma.registration.delete({
       where: {
         id: eventId,
       },
     });
+
     await sendDeletedEmail(email);
     res.json({
       message: `Registration with ${email} in event with id ${eventId} deleted successfully`,
+      registration: registration,
     });
   } catch (error) {
     console.log(error);
